@@ -9,28 +9,37 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/canva', [CanvaDesignController::class, 'index'])->name('canva.index');
-Route::get('/canva/create', [CanvaDesignController::class, 'create'])->name('canva.create');
-Route::post('/canva', [CanvaDesignController::class, 'store'])->name('canva.store');
+Route::get('/', [CanvaDesignController::class, 'index'])->name('canva.index');
+Route::get('/create', [CanvaDesignController::class, 'create'])->name('canva.create');
+Route::post('/store', [CanvaDesignController::class, 'store'])->name('canva.store');
 // Route::post('/canva/webhook', [CanvaDesignController::class, 'webhook'])->name('canva.webhook');
 Route::get('/canva/auth', [CanvaDesignController::class, 'redirectToCanva'])->name('canva.auth');
 Route::get('/canva/callback', [CanvaDesignController::class, 'handleCanvaCallback'])->name('canva.callback');
 
 
-Route::get('/download/{link}', function ($link) {
+Route::get('/download/{link}', function (string $link) {
+    // 1️⃣ Find the design row (404 if not found)
     $design = CanvaDesign::where('download_link', $link)->firstOrFail();
+    // return $design;
+    // 2️⃣ Decide which path to test
+    $filePath = $design->file_path                     // Prefer column value
+        ?: "canva_designs/{$design->name}.pdf"; // fallback
 
-    // Use saved file_path if available, otherwise build from UUID
-    $filePath = $design->file_path ?: "canva_designs/{$design->download_link}.pdf";
-
-    if (! Storage::disk('public')->exists($filePath)) {
+    // 3️⃣ Does the file actually exist in storage/app/public/... ?
+    if (Storage::disk('public')->missing($filePath)) {
         abort(404, 'File not found.');
     }
 
-    // Download the latest design file
-    return Storage::disk('public')->download($filePath, basename($filePath), [
-        'Content-Type' => 'application/pdf',
-    ]);
-})->name('canva.download'); 
+    // 4️⃣ Stream the file as a download
+    return Storage::disk('public')->download(
+        $filePath,
+        basename($filePath),          // download filename
+        ['Content-Type' => 'application/pdf']
+    );
+})->name('canva.download');
 
 // Route::get('/canva/download/{download_link}', [CanvaDesignController::class, 'download'])->name('canva.download');
+
+Route::get('/canva/{id}/edit', [CanvaDesignController::class, 'edit'])->name('canva.edit');
+Route::put('/canva/{id}', [CanvaDesignController::class, 'update'])->name('canva.update');
+Route::delete('/canva/{id}', [CanvaDesignController::class, 'destroy'])->name('canva.destroy');

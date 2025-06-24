@@ -130,6 +130,7 @@ class CanvaDesignController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'name' => 'required|string|max:255|unique:canva_designs,name',
             'canva_link' => 'required|url',
             'expiry_date' => 'required|date|after:today',
         ]);
@@ -138,6 +139,7 @@ class CanvaDesignController extends Controller
 
         // Store in DB
         $design = CanvaDesign::create([
+            'name' => $request->name,
             'canva_link' => $request->canva_link,
             'download_link' => $download_link,
             'expiry_date' => $request->expiry_date,
@@ -247,7 +249,9 @@ class CanvaDesignController extends Controller
             return;
         }
 
-        $relative = "canva_designs/{$design->download_link}.pdf";
+        // Use slugified name for filename, fallback to download_link if empty
+        $baseName = $design->name ? Str::slug($design->name) : $design->download_link;
+        $relative = "canva_designs/{$baseName}.pdf";
         $absolute = Storage::disk('public')->path($relative);
         File::ensureDirectoryExists(dirname($absolute));
 
@@ -261,17 +265,6 @@ class CanvaDesignController extends Controller
         Log::info("PDF saved to {$relative}");
     }
 
-
-
-    public function download($download_link)
-    {
-        $design = CanvaDesign::where('download_link', $download_link)->firstOrFail();
-        $filePath = "canva_pdfs/{$download_link}.pdf";
-        if (!Storage::disk('public')->exists($filePath)) {
-            $this->fetchAndStorePdf($design);
-        }
-        return Storage::disk('public')->download($filePath, 'canva-design.pdf');
-    }
 
 
     public function callback(Request $request)
@@ -309,5 +302,57 @@ class CanvaDesignController extends Controller
             return $matches[1];
         }
         return null;
+    }
+
+    public function edit($id)
+    {
+        $design = CanvaDesign::findOrFail($id);
+        return view('canva.edit', compact('design'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255|unique:canva_designs,name,' . $id . ',id',
+            'canva_link' => 'required|url',
+            'expiry_date' => 'required|date|after:today',
+        ]);
+        $design = CanvaDesign::findOrFail($id);
+
+        $oldLink = $design->canva_link;
+        $oldName = $design->name;
+        $newName = $request->name;
+        $newFileName = Str::slug($newName) . '.pdf';
+        $newFilePath = 'canva_designs/' . $newFileName;
+
+        $oldFilePath =  $design->file_path                     // Prefer column value
+            ?: "canva_designs/{$design->name}.pdf";
+        $design->name = $newName;
+        $design->canva_link = $request->canva_link;
+        $design->expiry_date = $request->expiry_date;
+        $design->save();
+
+        if ($request->canva_link == $oldLink) {
+            // If the Canva link is the same, just rename the file if needed
+            if ($oldName !== $newName && Storage::disk('public')->exists($oldFilePath)) {
+                Storage::disk('public')->move($oldFilePath, $newFilePath);
+            }
+        } else {
+
+            // If the Canva link has changed, delete the old file and fetch the new PDF
+            if (Storage::disk('public')->exists($oldFilePath)) {
+                Storage::disk('public')->delete($oldFilePath);
+            }
+            $this->fetchAndStorePdf($design);
+        }
+
+        return redirect()->route('canva.index')->with('success', 'Design updated!');
+    }
+
+    public function destroy($id)
+    {
+        $design = CanvaDesign::findOrFail($id);
+        $design->delete();
+        return redirect()->route('canva.index')->with('success', 'Design deleted!');
     }
 }
