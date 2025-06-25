@@ -355,4 +355,13 @@ class CanvaDesignController extends Controller
         $design->delete();
         return redirect()->route('canva.index')->with('success', 'Design deleted!');
     }
+
+    public function fetchAllLatest()
+    {
+        $designs = CanvaDesign::all();
+        foreach ($designs as $design) {
+            $this->fetchAndStorePdf($design);
+        }
+        return redirect()->back()->with('success', 'All designs have been updated with the latest version.');
+    }
 }

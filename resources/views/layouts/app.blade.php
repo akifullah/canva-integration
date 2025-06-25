@@ -66,6 +66,15 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('canva.create') }}">Add Design</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link btn btn-outline-primary ms-2" href="{{ route('canva.auth') }}">Canva Auth</a>
+                </li>
+                <li class="nav-item">
+                    <form method="POST" action="{{ route('canva.fetch') }}" style="display:inline;">
+                        @csrf
+                        <button type="submit" class="nav-link btn btn-outline-success ms-2" style="border:none;">Fetch Latest Designs</button>
+                    </form>
+                </li>
             </ul>
         </div>
     </div>

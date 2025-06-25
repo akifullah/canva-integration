@@ -91,6 +91,8 @@
                                         @else
                                             <a href="{{ route('canva.download', ['link' => $design->download_link]) }}"
                                                 class="btn btn-success btn-sm" title="Download PDF"><i class="bi bi-download"></i></a>
+                                            <a href="{{ route('canva.preview', ['link' => $design->download_link]) }}" target="_blank"
+                                                class="btn btn-primary btn-sm" title="Preview PDF"><i class="bi bi-eye"></i></a>
                                             <button class="btn btn-info btn-sm copy-link-btn" data-link="{{ route('canva.download', ['link' => $design->download_link]) }}" type="button" title="Copy Link"><i class="bi bi-clipboard"></i></button>
                                         @endif
                                     </td>

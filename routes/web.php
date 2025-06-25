@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CanvaDesignController;
 use App\Models\CanvaDesign;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Request;
 
 Route::get('/', function () {
     return view('welcome');
@@ -16,30 +17,67 @@ Route::post('/store', [CanvaDesignController::class, 'store'])->name('canva.stor
 Route::get('/canva/auth', [CanvaDesignController::class, 'redirectToCanva'])->name('canva.auth');
 Route::get('/canva/callback', [CanvaDesignController::class, 'handleCanvaCallback'])->name('canva.callback');
 
-
 Route::get('/download/{link}', function (string $link) {
-    // 1️⃣ Find the design row (404 if not found)
     $design = CanvaDesign::where('download_link', $link)->firstOrFail();
-    // return $design;
-    // 2️⃣ Decide which path to test
-    $filePath = $design->file_path                     // Prefer column value
-        ?: "canva_designs/{$design->name}.pdf"; // fallback
+    $slug = \Illuminate\Support\Str::slug($design->name);
+    $filePath = $design->file_path ?: "canva_designs/{$slug}.pdf";
 
-    // 3️⃣ Does the file actually exist in storage/app/public/... ?
-    if (Storage::disk('public')->missing($filePath)) {
+    // Check if the file exists in storage/app/public/...
+    if (!Storage::disk('public')->exists($filePath)) {
         abort(404, 'File not found.');
     }
 
-    // 4️⃣ Stream the file as a download
-    return Storage::disk('public')->download(
-        $filePath,
-        basename($filePath),          // download filename
+    // Get the absolute path to the file
+    $absolutePath = storage_path('app/public/' . $filePath);
+
+    // Stream the file as a download
+    return response()->download(
+        $absolutePath,
+        basename($filePath),
         ['Content-Type' => 'application/pdf']
     );
 })->name('canva.download');
+
+Route::get('/preview/{link}', function (string $link) {
+    $design = CanvaDesign::where('download_link', $link)->firstOrFail();
+    $slug = \Illuminate\Support\Str::slug($design->name);
+    $filePath = $design->file_path ?: "canva_designs/{$slug}.pdf";
+
+    // Check if the file exists in storage/app/public/...
+    if (!Storage::disk('public')->exists($filePath)) {
+        abort(404, 'File not found.');
+    }
+
+    // Get the absolute path to the file
+    $absolutePath = storage_path('app/public/' . $filePath);
+
+    // Stream the file inline for preview
+    return response()->file(
+        $absolutePath,
+        ['Content-Type' => 'application/pdf']
+    );
+})->name('canva.preview');
 
 // Route::get('/canva/download/{download_link}', [CanvaDesignController::class, 'download'])->name('canva.download');
 
 Route::get('/canva/{id}/edit', [CanvaDesignController::class, 'edit'])->name('canva.edit');
 Route::put('/canva/{id}', [CanvaDesignController::class, 'update'])->name('canva.update');
 Route::delete('/canva/{id}', [CanvaDesignController::class, 'destroy'])->name('canva.destroy');
+
+Route::get('/password', function () {
+    return view('password');
+})->name('password.form');
+
+Route::post('/password/submit', function (Request $request) {
+    $request->validate([
+        'password' => 'required',
+    ]);
+    $correctPassword = 'letmein'; // Change this to your desired password
+    if ($request->password === $correctPassword) {
+        session(['site_authenticated' => true]);
+        return redirect('/');
+    }
+    return back()->withErrors(['password' => 'Incorrect password.']);
+})->name('password.submit');
+
+Route::post('/canva/fetch', [CanvaDesignController::class, 'fetchAllLatest'])->name('canva.fetch');
