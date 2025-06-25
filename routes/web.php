@@ -72,9 +72,10 @@ Route::post('/password/submit', function (Request $request) {
     $request->validate([
         'password' => 'required',
     ]);
-    $correctPassword = 'letmein'; // Change this to your desired password
+    $correctPassword = 'pulse1234'; // Change this to your desired password
     if ($request->password === $correctPassword) {
         session(['site_authenticated' => true]);
+        session(['site_authenticated_expires_at' => now()->addHour()->timestamp]);
         return redirect('/');
     }
     return back()->withErrors(['password' => 'Incorrect password.']);

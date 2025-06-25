@@ -19,6 +19,12 @@ class PasswordProtectMiddleware
         if (!Session::get('site_authenticated')) {
             return redirect('/password');
         }
+        // Check for expiration
+        $expiresAt = Session::get('site_authenticated_expires_at');
+        if (!$expiresAt || $expiresAt < time()) {
+            Session::forget(['site_authenticated', 'site_authenticated_expires_at']);
+            return redirect('/password');
+        }
 
         return $next($request);
     }
