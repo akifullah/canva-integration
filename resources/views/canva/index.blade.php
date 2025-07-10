@@ -4,25 +4,27 @@
     <div class="container ">
 
         <div class="">
-            <h4>Instructions for Canva Converter</h4>
-            <div class="row">
-                <div class="col-md-6">
-                    <ul>
-                        <li>Click “Canva Auth” after logging in</li>
-                        <li>Open your Canva design, click Share, set to “Anyone with the link”, and copy the link</li>
-                        <li>Go to “Add Canva Design” and enter the name, pasted link, and expiration date</li>
 
-                    </ul>
+            <p><strong>Adding a Canva-to-Dynamic PDF conversion:</strong></p>
 
-                </div>
-                <div class="col-md-6">
-                    <ul>
-                        <li>Click “Add Design” to save the entry</li>
-                        <li>Copy the download link using the clipboard icon</li>
-                        <li>Use the copied link on your website</li>
-                    </ul>
-                </div>
-            </div>
+            <ol>
+                <li>Click “Canva Auth” upon logging in</li>
+                <li>In Canva, locate the design file, and click Share. Make sure the Access Level is set to “Anyone with the
+                    link” and click Copy Link</li>
+                <li>In the Converter (this page), under “Add Canva Design”, enter the file name, as it appears in Canva, in
+                    the Name field; enter the link you had copied into the Canva Link field; and set the date after which
+                    the PDF will no longer be updated, in the Expiration date field (usually two weeks post-event). Click
+                    “Add Design”.</li>
+                <li>Locate the new conversion in the list and click the clipboard icon to copy the download link. Use this
+                    link on the website.</li>
+            </ol>
+            <p><strong>Note:</strong></p>
+            <ul>
+                <li>All of the PDFs on the list will update automatically every few minutes.</li>
+                <li>Clicking on “Re-Convert All PDFs” will force the creation of a new PDF.</li>
+                <li>You can view the download link or open the PDFs using the download and eye icons.</li>
+                <li>You can also edit the conversion (name, Canva link, or expiration date) or delete it entirely.</li>
+            </ul>
         </div>
 
         <div class="col-md-12 mb-4">
@@ -101,7 +103,7 @@
                                 <th>ID</th>
                                 <th>Name</th>
                                 <th>Canva Link</th>
-                                <th>Download Link</th>
+                                <th>Options</th>
                                 <th>Expiration Date</th>
                                 <th>Actions</th>
                             </tr>

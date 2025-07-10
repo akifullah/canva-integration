@@ -53,12 +53,12 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
+                {{-- <li class="nav-item">
                     <a class="nav-link" href="{{ route('canva.index') }}">Designs</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('canva.create') }}">Add Design</a>
-                </li>
+                </li> --}}
                 <li class="nav-item">
                     <a class="nav-link  ms-2" href="{{ route('canva.auth') }}">Canva Auth</a>
                 </li>
