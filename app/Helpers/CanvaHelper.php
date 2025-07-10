@@ -14,12 +14,15 @@ if (! function_exists('canvaAccessToken')) {
             return $row->access_token;
         }
 
-       
+
 
 
         // Refresh the token
         $res = Http::asForm()
-            ->withBasicAuth(config('services.canva.client_id'), config('services.canva.client_secret'))
+            ->withBasicAuth(
+                env('CANVA_CLIENT_ID'),
+                env('CANVA_CLIENT_SECRET')
+            )
             ->post('https://api.canva.com/rest/v1/oauth/token', [
                 'grant_type'    => 'refresh_token',
                 'refresh_token' => $row->refresh_token,
