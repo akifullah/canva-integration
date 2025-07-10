@@ -14,6 +14,9 @@ if (! function_exists('canvaAccessToken')) {
             return $row->access_token;
         }
 
+       
+
+
         // Refresh the token
         $res = Http::asForm()
             ->withBasicAuth(config('services.canva.client_id'), config('services.canva.client_secret'))
@@ -23,7 +26,7 @@ if (! function_exists('canvaAccessToken')) {
             ]);
 
         if ($res->failed()) {
-            Log::error('Could not refresh Canva token: '.$res->body());
+            Log::error('Could not refresh Canva token: ' . $res->body());
             return null;
         }
 

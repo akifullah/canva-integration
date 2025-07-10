@@ -65,7 +65,7 @@
                 <li class="nav-item">
                     <form method="POST" action="{{ route('canva.fetch') }}" style="display:inline;">
                         @csrf
-                        <button type="submit" class="nav-link  ms-2" style="border:none;">Fetch Latest Designs</button>
+                        <button type="submit" class="nav-link  ms-2" style="border:none;">Re-Convert All PDFs</button>
                     </form>
                 </li>
             </ul>

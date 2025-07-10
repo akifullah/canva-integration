@@ -28,7 +28,7 @@
                             <input type="url" class="form-control" id="canva_link" name="canva_link" value="{{ old('canva_link', $design->canva_link) }}" required>
                         </div>
                         <div class="mb-3">
-                            <label for="expiry_date" class="form-label">Expiry Date</label>
+                            <label for="expiry_date" class="form-label">Expiration Date</label>
                             <input type="date" class="form-control" id="expiry_date" name="expiry_date" value="{{ old('expiry_date', $design->expiry_date) }}" required>
                         </div>
                         <button type="submit" class="btn btn-warning w-100">Update Design</button>

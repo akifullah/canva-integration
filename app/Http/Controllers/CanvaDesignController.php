@@ -88,7 +88,7 @@ class CanvaDesignController extends Controller
         // 4. Handle response
         $data = $response->json();
         if ($response->failed()) {
-            dd('OAuth Error:', $data); // or handle it gracefully
+            return  json_decode('OAuth Error:', $data); // or handle it gracefully
         }
 
 
@@ -135,6 +135,14 @@ class CanvaDesignController extends Controller
             'expiry_date' => 'required|date|after:today',
         ]);
 
+
+        $accessToken = canvaAccessToken();
+        if (!$accessToken) {
+            return redirect()->route('canva.index')->withErrors([
+                'canva_auth' => 'Access token is invalid. Please re-authenticate with Canva.',
+            ]);
+        }
+
         $download_link = Str::uuid();
 
         // Store in DB
@@ -146,8 +154,23 @@ class CanvaDesignController extends Controller
         ]);
 
         // Fetch and store PDF/image
-        $this->fetchAndStorePdf($design); // <-- call function below
-
+        $result = $this->fetchAndStorePdf($design); // <-- call function below
+        $data = $result->getData();
+        if ($data->status == "error") {
+            // Delete the design if PDF fetch failed
+            $design->delete();
+            $details = json_decode($data->details);
+            // If the error code is "invalid_access_token", return with a canva_auth error message
+            if (isset($details->code) && $details->code === "invalid_access_token") {
+                return redirect()->route('canva.index')->withErrors([
+                    'canva_auth' => 'Access token is invalid. Please re-authenticate with Canva.',
+                ]);
+            }
+            // Otherwise, return a generic error message
+            return redirect()->route('canva.index')->withErrors([
+                'canva_auth' => $details->message ?? 'An error occurred while fetching the design from Canva.',
+            ]);
+        }
         return redirect()->route('canva.index')->with('success', 'Design added!');
     }
 
@@ -185,9 +208,6 @@ class CanvaDesignController extends Controller
 
         $accessToken = canvaAccessToken();
         if (!$accessToken) {
-            return response()->json([
-                'error' => 'Invalid Access Token',
-            ]);
             Log::error('No valid Canva token.');
         }
 
@@ -208,13 +228,16 @@ class CanvaDesignController extends Controller
 
         if ($create->failed()) {
             Log::error('Export job creation failed: ' . $create->body());
-            return;
+            return response()->json([
+                'status' => 'error',
+                'details' => $create->body()
+            ], 500);
         }
 
         $jobId = $create->json('job.id');
         if (!$jobId) {
             Log::error('Export job ID missing: ' . $create->body());
-            return;
+            return $create->body();
         }
 
         // 3️⃣ Poll until done (in_progress ➜ success/failed)
@@ -263,6 +286,12 @@ class CanvaDesignController extends Controller
 
         $design->update(['file_path' => $relative]);
         Log::info("PDF saved to {$relative}");
+
+        // Return a JSON response indicating success and the file path
+        return response()->json([
+            'status' => 'success',
+            'file_path' => $relative,
+        ]);
     }
 
 
@@ -317,6 +346,14 @@ class CanvaDesignController extends Controller
             'canva_link' => 'required|url',
             'expiry_date' => 'required|date|after:today',
         ]);
+
+        $accessToken = canvaAccessToken();
+        if (!$accessToken) {
+            return redirect()->route('canva.index')->withErrors([
+                'canva_auth' => 'Access token is invalid. Please re-authenticate with Canva.',
+            ]);
+        }
+
         $design = CanvaDesign::findOrFail($id);
 
         $oldLink = $design->canva_link;
@@ -343,7 +380,24 @@ class CanvaDesignController extends Controller
             if (Storage::disk('public')->exists($oldFilePath)) {
                 Storage::disk('public')->delete($oldFilePath);
             }
-            $this->fetchAndStorePdf($design);
+            $result = $this->fetchAndStorePdf($design);
+
+            $data = $result->getData();
+            if ($data->status == "error") {
+                // Delete the design if PDF fetch failed
+                // $design->delete();
+                $details = json_decode($data->details);
+                // If the error code is "invalid_access_token", return with a canva_auth error message
+                if (isset($details->code) && $details->code === "invalid_access_token") {
+                    return redirect()->route('canva.index')->withErrors([
+                        'canva_auth' => 'Did not update the file!, Access token is invalid. Please re-authenticate with Canva.',
+                    ]);
+                }
+                // Otherwise, return a generic error message
+                return redirect()->route('canva.index')->withErrors([
+                    'canva_auth' => $details->message ?? 'An error occurred while fetching the design from Canva.',
+                ]);
+            }
         }
 
         return redirect()->route('canva.index')->with('success', 'Design updated!');
