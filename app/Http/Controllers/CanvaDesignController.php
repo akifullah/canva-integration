@@ -418,4 +418,15 @@ class CanvaDesignController extends Controller
         }
         return redirect()->back()->with('success', 'All designs have been updated with the latest version.');
     }
+
+    public function fetchSingleLatest($id)
+    {
+        $design = CanvaDesign::findOrFail($id);
+        if ($design) {
+            $this->fetchAndStorePdf($design);
+            return redirect()->back()->with('success', 'Design has been updated with the latest version.');
+        } else {
+            return redirect()->back()->with('error', 'Failed to update the design.');
+        }
+    }
 }

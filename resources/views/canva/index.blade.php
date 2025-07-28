@@ -130,7 +130,9 @@
                                         @endif
                                     </td>
                                     <td>{{ $design->expiry_date ? $design->expiry_date->format('Y-m-d') : '' }}</td>
-                                    <td>
+                                    <td class="text-center">
+                                        <a href="{{ route('canva.fetchSingle', $design->id) }}"
+                                            class="btn btn-success btn-sm">Fetch</a>
                                         <a href="{{ route('canva.edit', $design->id) }}"
                                             class="btn btn-warning btn-sm">Edit</a>
                                         <form action="{{ route('canva.destroy', $design->id) }}" method="POST"

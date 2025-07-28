@@ -82,3 +82,4 @@ Route::post('/password/submit', function (Request $request) {
 })->name('password.submit');
 
 Route::post('/canva/fetch', [CanvaDesignController::class, 'fetchAllLatest'])->name('canva.fetch');
+Route::get('/canva/fetch/{id}', [CanvaDesignController::class, 'fetchSingleLatest'])->name('canva.fetchSingle');
