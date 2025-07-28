@@ -64,7 +64,7 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="mb-3">
-                                    <label for="expiry_date" class="form-label mb-0">Expiration Date</label>
+                                    <label for="expiry_date" class="form-label mb-0">Expiry Date</label>
                                     <input type="date" class="form-control" id="expiry_date" name="expiry_date"
                                         value="{{ old('expiry_date') }}" required>
                                 </div>
@@ -100,21 +100,25 @@
                         class="table table-striped table-sm table-hover mb-0 table-bordered align-middle rounded-table beautiful-table">
                         <thead class="table-dark">
                             <tr>
-                                <th>ID</th>
+                                <th class="text-center">ID</th>
                                 <th>Name</th>
                                 <th>Canva Link</th>
                                 <th>Options</th>
-                                <th>Expiration Date</th>
+                                <th>Expiry</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse ($designs as $design)
                                 <tr>
-                                    <td>{{ $design->id }}</td>
-                                    <td>{{ $design->name }}</td>
-                                    <td><a href="{{ $design->canva_link }}" target="_blank">View</a></td>
+                                    <td class="text-center">{{ $design->id }}</td>
                                     <td>
+                                        <p class="mb-0 name-text" title="{{ $design->name }}">
+                                            {{ \Illuminate\Support\Str::limit($design->name, 20, '...') }}
+                                        </p>
+                                    </td>
+                                    <td><a class="btn btn-success btn-sm" href="{{ $design->canva_link }}" target="_blank">View</a></td>
+                                    <td class=" d-flex  flex-wrap  gap-2">
                                         @if ($design->is_expired)
                                             <span class="badge bg-danger" style="font-size: 1em;">Expired</span>
                                         @else
@@ -130,9 +134,9 @@
                                         @endif
                                     </td>
                                     <td>{{ $design->expiry_date ? $design->expiry_date->format('Y-m-d') : '' }}</td>
-                                    <td class="text-center">
+                                    <td class="text-center d-flex  flex-wrap  gap-2">
                                         <a href="{{ route('canva.fetchSingle', $design->id) }}"
-                                            class="btn btn-success btn-sm">Fetch</a>
+                                            class="btn btn-success btn-sm">Update</a>
                                         <a href="{{ route('canva.edit', $design->id) }}"
                                             class="btn btn-warning btn-sm">Edit</a>
                                         <form action="{{ route('canva.destroy', $design->id) }}" method="POST"
