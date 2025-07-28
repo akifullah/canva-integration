@@ -21,7 +21,7 @@
             <p><strong>Note:</strong></p>
             <ul>
                 <li>All of the PDFs on the list will update automatically every few minutes.</li>
-                <li>Clicking on “Re-Convert All PDFs” will force the creation of a new PDF.</li>
+                <li>Clicking on “Update All PDFs” will force the creation of a new PDF.</li>
                 <li>You can view the download link or open the PDFs using the download and eye icons.</li>
                 <li>You can also edit the conversion (name, Canva link, or expiration date) or delete it entirely.</li>
             </ul>

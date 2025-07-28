@@ -101,7 +101,7 @@
                     <li class="nav-item">
                         <form method="POST" action="{{ route('canva.fetch') }}" style="display:inline;">
                             @csrf
-                            <button type="submit" class="nav-link  ms-2" style="border:none;">All PDFs</button>
+                            <button type="submit" class="nav-link  ms-2" style="border:none;">Update All PDFs</button>
                         </form>
                     </li>
                 </ul>
