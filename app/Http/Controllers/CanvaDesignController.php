@@ -118,7 +118,7 @@ class CanvaDesignController extends Controller
 
     public function index()
     {
-        $designs = CanvaDesign::orderByDesc('created_at')->get();
+        $designs = CanvaDesign::orderByDesc('created_at')->paginate(10);
         return view('canva.index', compact('designs'));
     }
 

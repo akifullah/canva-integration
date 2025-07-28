@@ -113,7 +113,7 @@
                                 <tr>
                                     <td class="text-center">{{ $design->id }}</td>
                                     <td>
-                                        <p class="mb-0 name-text" title="{{ $design->name }}">
+                                        <p class="mb-0 name-text" data-text="{{ $design->name }}">
                                             {{ \Illuminate\Support\Str::limit($design->name, 20, '...') }}
                                         </p>
                                     </td>
@@ -156,8 +156,10 @@
                         </tbody>
                     </table>
                 </div>
+                
             </div>
         </div>
+        {{ $designs->links('pagination::bootstrap-5') }}
     </div>
 @endsection
 <!-- Bootstrap Icons CDN -->
