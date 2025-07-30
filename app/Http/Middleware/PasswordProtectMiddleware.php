@@ -12,7 +12,7 @@ class PasswordProtectMiddleware
     {
 
         // Define excluded route names
-        $excludedRouteNames = ['canva.download', 'canva.preview'];
+        $excludedRouteNames = ['canva.download', 'canva.preview', "canva.fetch"];
 
         if ($request->route() && in_array($request->route()->getName(), $excludedRouteNames)) {
             return $next($request);

@@ -99,7 +99,7 @@
                         <a class="nav-link  ms-2" href="{{ route('canva.auth') }}">Canva Auth</a>
                     </li>
                     <li class="nav-item">
-                        <form method="POST" action="{{ route('canva.fetch') }}" style="display:inline;">
+                        <form method="GET" action="{{ route('canva.fetch') }}" style="display:inline;">
                             @csrf
                             <button type="submit" class="nav-link  ms-2" style="border:none;">Update All PDFs</button>
                         </form>

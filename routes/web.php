@@ -81,5 +81,6 @@ Route::post('/password/submit', function (Request $request) {
     return back()->withErrors(['password' => 'Incorrect password.']);
 })->name('password.submit');
 
-Route::post('/canva/fetch', [CanvaDesignController::class, 'fetchAllLatest'])->name('canva.fetch');
+// Route::post('/canva/fetch', [CanvaDesignController::class, 'fetchAllLatest'])->name('canva.fetch');
 Route::get('/canva/fetch/{id}', [CanvaDesignController::class, 'fetchSingleLatest'])->name('canva.fetchSingle');
+Route::get('/canva/fetch', [CanvaDesignController::class, 'fetchAllLatest'])->name('canva.fetch');
