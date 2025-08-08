@@ -114,7 +114,7 @@
                                     <td class="text-center">{{ $design->id }}</td>
                                     <td class="text-cell">
                                         <p class="mb-0 name-text" data-text="{{ $design->name }}">
-                                            {{ \Illuminate\Support\Str::limit($design->name, 80, '...') }}
+                                            {{ \Illuminate\Support\Str::limit($design->name, 70, '...') }}
                                         </p>
                                     </td>
                                     <td><a class="btn btn-success btn-sm" href="{{ $design->canva_link }}" target="_blank">View</a></td>
