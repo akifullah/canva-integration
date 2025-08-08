@@ -52,10 +52,13 @@
             padding-top: 2rem;
         }
 
+        .text-cell{
+            max-width: 400px;
+        }
         .name-text {
             position: relative;
         }
-        
+
         .name-text::after {
             content: attr(data-text);
             display: none;
@@ -71,9 +74,10 @@
             padding: 3px;
             border: 1px solid gray;
         }
-        .name-text:hover:after{
+
+        .name-text:hover:after {
             display: block;
-        } 
+        }
     </style>
 </head>
 
