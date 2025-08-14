@@ -104,9 +104,9 @@
                         <li class="nav-item">
                             <a class="nav-link  ms-2" href="{{ route('logout') }}">Logout</a>
                         </li>
-                        <li class="nav-item">
+                        {{-- <li class="nav-item">
                             <a class="nav-link  ms-2" href="#exampleModal" data-bs-toggle="modal">Update password</a>
-                        </li>
+                        </li> --}}
                         <li class="nav-item">
                             <a class="nav-link  ms-2" href="{{ route('canva.auth') }}">Canva Auth</a>
                         </li>
