@@ -26,20 +26,25 @@
                 <li>You can also edit the conversion (name, Canva link, or expiration date) or delete it entirely.</li>
             </ul>
         </div>
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul class="mb-0">
+                    @foreach ($errors->all() as $error)
+                        <li>{!! $error !!}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        @if (session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+        @endif
 
         <div class="col-md-12 mb-4">
             <div class="card">
                 <div class="card-header text-white" style="background-color: #2170B6;">Add Canva Design</div>
                 <div class="card-body py-2">
-                    @if ($errors->any())
-                        <div class="alert alert-danger">
-                            <ul class="mb-0">
-                                @foreach ($errors->all() as $error)
-                                    <li>{!! $error !!}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
+
                     {{-- @if ($errors->has('canva_auth'))
                         <div class="alert alert-danger">
                             {{ $errors->first('canva_auth') }}
@@ -90,9 +95,7 @@
         </div> --}}
 
 
-        @if (session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
+
         <div class="card responsive-card">
             <div class="card-body p-0">
                 <div class="table-responsive">
@@ -117,7 +120,8 @@
                                             {{ \Illuminate\Support\Str::limit($design->name, 70, '...') }}
                                         </p>
                                     </td>
-                                    <td><a class="btn btn-success btn-sm" href="{{ $design->canva_link }}" target="_blank">View</a></td>
+                                    <td><a class="btn btn-success btn-sm" href="{{ $design->canva_link }}"
+                                            target="_blank">View</a></td>
                                     <td class=" d-flex  flex-wrap  gap-2">
                                         @if ($design->is_expired)
                                             <span class="badge bg-danger" style="font-size: 1em;">Expired</span>
@@ -156,7 +160,7 @@
                         </tbody>
                     </table>
                 </div>
-                
+
             </div>
         </div>
         {{ $designs->links('pagination::bootstrap-5') }}

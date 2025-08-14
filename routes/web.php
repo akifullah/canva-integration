@@ -68,19 +68,14 @@ Route::get('/password', function () {
     return view('password');
 })->name('password.form');
 
-Route::post('/password/submit', function (Request $request) {
-    $request->validate([
-        'password' => 'required',
-    ]);
-    $correctPassword = 'pulse1234'; // Change this to your desired password
-    if ($request->password === $correctPassword) {
-        session(['site_authenticated' => true]);
-        session(['site_authenticated_expires_at' => now()->addHour()->timestamp]);
-        return redirect('/');
-    }
-    return back()->withErrors(['password' => 'Incorrect password.']);
-})->name('password.submit');
 
 // Route::post('/canva/fetch', [CanvaDesignController::class, 'fetchAllLatest'])->name('canva.fetch');
 Route::get('/canva/fetch/{id}', [CanvaDesignController::class, 'fetchSingleLatest'])->name('canva.fetchSingle');
 Route::get('/canva/fetch', [CanvaDesignController::class, 'fetchAllLatest'])->name('canva.fetch');
+
+
+
+
+Route::post('/password/submit', [CanvaDesignController::class, "auth"])->name('password.submit');
+Route::post('/change-password', [CanvaDesignController::class, "changePassword"] )->name('updatePassword.submit');
+Route::get('/logout', [CanvaDesignController::class, "logout"] )->name('logout');

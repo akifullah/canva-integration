@@ -52,9 +52,10 @@
             padding-top: 2rem;
         }
 
-        .text-cell{
+        .text-cell {
             max-width: 400px;
         }
+
         .name-text {
             position: relative;
         }
@@ -99,9 +100,18 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('canva.create') }}">Add Design</a>
                 </li> --}}
-                    <li class="nav-item">
-                        <a class="nav-link  ms-2" href="{{ route('canva.auth') }}">Canva Auth</a>
-                    </li>
+                    @if (session('site_authenticated'))
+                        <li class="nav-item">
+                            <a class="nav-link  ms-2" href="{{ route('logout') }}">Logout</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link  ms-2" href="#exampleModal" data-bs-toggle="modal">Update password</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link  ms-2" href="{{ route('canva.auth') }}">Canva Auth</a>
+                        </li>
+                    @endif
+
                     <li class="nav-item">
                         <form method="GET" action="{{ route('canva.fetch') }}" style="display:inline;">
                             @csrf
@@ -112,6 +122,44 @@
             </div>
         </div>
     </nav>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Update Username & Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                @php
+                    $user = \App\Models\UserPassword::first();
+                @endphp
+                <div class="modal-body">
+                    <form method="POST" action="{{ route('updatePassword.submit') }}">
+                        @csrf
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" name="username"
+                                value="{{ $user->username }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="old_password" class="form-label">Old Password</label>
+                            <input type="password" class="form-control" id="old_password" name="old_password" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="new_password" class="form-label">New Password</label>
+                            <input type="password" class="form-control" id="new_password" name="new_password">
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Update</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <main>
         @yield('content')
     </main>

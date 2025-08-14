@@ -4,13 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\CanvaDesign;
 use App\Models\CanvaToken;
+use App\Models\UserPassword;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Sleep;
+use Symfony\Component\CssSelector\Node\FunctionNode;
 
 class CanvaDesignController extends Controller
 {
@@ -118,7 +121,7 @@ class CanvaDesignController extends Controller
 
     public function index()
     {
-        $designs = CanvaDesign::orderByDesc('created_at')->paginate(10);
+        $designs = CanvaDesign::orderByDesc('created_at')->paginate(50);
         return view('canva.index', compact('designs'));
     }
 
@@ -429,4 +432,54 @@ class CanvaDesignController extends Controller
             return redirect()->back()->with('error', 'Failed to update the design.');
         }
     }
+
+
+
+    // CHANGE PASSWORD
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'old_password' => 'required',
+            'username' => 'required|string|max:255',
+            'new_password' => 'required|string|min:6',
+        ]);
+
+        $user = UserPassword::first();
+
+        // Check old password
+        if (!Hash::check($request->old_password, $user->password)) {
+            return back()->withErrors(['old_password' => 'Old password is incorrect.']);
+        }
+
+        $user->username = $request->username;
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+
+        return redirect()->back()->with('success', 'Username and password updated successfully.');
+    }
+
+    public function auth(Request $request)
+    {
+        $request->validate([
+            'username' => 'required',
+            'password' => 'required',
+        ]);
+        $user = UserPassword::first();
+        if (
+            $user && $request->username == $user->username && Hash::check($request->password, $user->password)
+        ) {
+            session(['site_authenticated' => true]);
+            session(['site_authenticated_expires_at' => now()->addHour()->timestamp]);
+            return redirect('/');
+        }
+        return back()->withErrors(['password' => 'The username or password is incorrect. Please try again.']);
+    }
+
+public function logout(Request $request)
+{
+    $request->session()->forget('site_authenticated');
+    $request->session()->forget('site_authenticated_expires_at');
+    $request->session()->flush();
+    return redirect('/password')->with('success', 'You have been logged out successfully.');
+}
 }
